@@ -18,7 +18,7 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminDashboardScreen(navController: NavController, viewModel: SharedViewModel) {
+fun AdminDashboardScreen(navController: NavController, viewModel: SharedViewModel , isAdmin: Boolean) {
     val jobList by viewModel.jobList.collectAsState(initial = emptyList())
 
     Scaffold(

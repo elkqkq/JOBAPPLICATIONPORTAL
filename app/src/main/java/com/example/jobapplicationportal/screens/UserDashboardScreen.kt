@@ -30,6 +30,8 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 fun UserDashboardScreen(
     navController: NavController,
     viewModel: SharedViewModel
+    , isAdmin: Boolean
+
 ) {
     val jobList by viewModel.jobList.collectAsState(initial = emptyList())
 

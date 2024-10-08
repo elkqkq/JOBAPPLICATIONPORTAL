@@ -14,11 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.jobapplicationportal.nav.Screens
+import com.example.jobapplicationportal.utils.SharedViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(navController: NavController, viewModel: SharedViewModel){
     Scaffold(
         topBar = {
             TopAppBar(

@@ -14,7 +14,7 @@ fun NavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screens.UserLoginScreen.route
+        startDestination = Screens.UserSignupScreen.route // Changed start destination to UserSignupScreen
     ) {
 
         // User Login screen
@@ -73,8 +73,8 @@ fun NavGraph(
         }
 
         // Notification screen (optional, if added)
-//        composable(route = Screens.NotificationScreen.route) {
-//            NotificationScreen(navController = navController, viewModel = sharedViewModel)
-//        }
+        // composable(route = Screens.NotificationScreen.route) {
+        //     NotificationScreen(navController = navController, viewModel = sharedViewModel)
+        // }
     }
 }
