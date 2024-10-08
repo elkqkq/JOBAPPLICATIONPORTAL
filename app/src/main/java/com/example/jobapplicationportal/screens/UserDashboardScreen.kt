@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,44 +15,51 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.jobapplicationportal.model.Job
 import com.example.jobapplicationportal.utils.SharedViewModel
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun GetDataScreen(
+fun UserDashboardScreen(
     navController: NavController,
-    viewModel: SharedViewModel,
-    isAdmin: Boolean
+    viewModel: SharedViewModel
 ) {
     val jobList by viewModel.jobList.collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Available Jobs") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                title = { Text("User Dashboard") },
+                actions = {
+                    IconButton(onClick = {
+                        navController.navigate("profile_screen")
+                    }) {
+                        Icon(Icons.Default.AccountCircle, contentDescription = "Profile")
                     }
                 }
             )
         }
     ) {
-        LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            items(jobList) { job ->
-                JobCard(
-                    job = job,
-                    isAdmin = isAdmin,
-                    onEdit = { if (isAdmin) navController.navigate("edit_job/${job.id}") },
-                    onDelete = { if (isAdmin) viewModel.deleteJob(job) },
-                    onApply = { if (!isAdmin) viewModel.applyForJob(job) }
-                )
+        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            Text(
+                text = "Available Jobs",
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            LazyColumn {
+                items(jobList) { job ->
+                    JobCard(job = job, onApply = {
+                        viewModel.applyForJob(job)
+                    })
+                }
             }
         }
     }
@@ -61,10 +68,7 @@ fun GetDataScreen(
 @Composable
 fun JobCard(
     job: Job,
-    isAdmin: Boolean,
-    onEdit: () -> Unit = {},
-    onDelete: () -> Unit = {},
-    onApply: () -> Unit = {}
+    onApply: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -77,14 +81,8 @@ fun JobCard(
             Text(text = job.location, style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (isAdmin) {
-                Row {
-                    Button(onClick = onEdit) { Text("Edit") }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = onDelete) { Text("Delete") }
-                }
-            } else {
-                Button(onClick = onApply) { Text("Apply") }
+            Button(onClick = onApply) {
+                Text("Apply")
             }
         }
     }
