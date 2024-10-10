@@ -1,18 +1,9 @@
 package com.example.jobapplicationportal.screens
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,22 +12,19 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.jobapplicationportal.utils.SharedViewModel
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminSignupScreen(
-    navController: NavController,
-    viewModel: SharedViewModel<Any?>
-) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun ChangePasswordScreen(navController: NavController, viewModel: SharedViewModel<Any?>) {
+    var currentPassword by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+    var successMessage by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Admin Signup") },
+                title = { Text("Change Password") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -53,16 +41,17 @@ fun AdminSignupScreen(
             verticalArrangement = Arrangement.Center
         ) {
             TextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
+                value = currentPassword,
+                onValueChange = { currentPassword = it },
+                label = { Text("Current Password") },
+                visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
+                value = newPassword,
+                onValueChange = { newPassword = it },
+                label = { Text("New Password") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -70,39 +59,34 @@ fun AdminSignupScreen(
             TextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
-                label = { Text("Confirm Password") },
+                label = { Text("Confirm New Password") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
             if (errorMessage.isNotEmpty()) {
-                Text(
-                    text = errorMessage,
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.error
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
             }
+            if (successMessage.isNotEmpty()) {
+                Text(text = successMessage, color = MaterialTheme.colorScheme.primary)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
-                    if (password == confirmPassword) {
-                        viewModel.signupUser(
-                            email = email,
-                            password = password,
-                            isAdmin = true,
-                            onSuccess = {
-                                navController.navigate("admin_dashboard")
-                            },
-                            onFailure = {
-                                errorMessage = it // Display the error message if sign up fails
-                            }
+                    if (newPassword == confirmPassword) {
+                        viewModel.changePassword(
+                            currentPassword = currentPassword,
+                            newPassword = newPassword,
+                            onSuccess = { successMessage = "Password changed successfully!" },
+                            onFailure = { errorMessage = it }
                         )
                     } else {
-                        errorMessage = "Passwords do not match"
+                        errorMessage = "Passwords do not match."
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Sign Up")
+                Text("Change Password")
             }
         }
     }

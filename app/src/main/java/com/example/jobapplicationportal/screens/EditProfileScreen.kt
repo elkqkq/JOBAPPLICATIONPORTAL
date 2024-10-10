@@ -2,21 +2,12 @@ package com.example.jobapplicationportal.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.jobapplicationportal.utils.SharedViewModel
@@ -24,28 +15,31 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserLoginScreen(
-    navController: NavController,
-    viewModel: SharedViewModel<Any?>
-) {
+fun EditProfileScreen(navController: NavController, viewModel: SharedViewModel<Any?>) {
     var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var successMessage by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
-    var isLoginSuccessful by remember { mutableStateOf(false) }
 
-    // Navigate to user dashboard if login is successful
-    LaunchedEffect(isLoginSuccessful) {
-        if (isLoginSuccessful) {
-            navController.navigate("user_dashboard") {
-                popUpTo("user_login") { inclusive = true }
+    // Fetch the current user's details
+    LaunchedEffect(Unit) {
+        viewModel.fetchCurrentUser(
+            onSuccess = {
+                email = it.email ?: ""
+                name = it.name ?: ""
+                phoneNumber = it.phoneNumber ?: ""
+            },
+            onFailure = {
+                errorMessage = it
             }
-        }
+        )
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("User Login") },
+                title = { Text("Edit Profile") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -62,6 +56,13 @@ fun UserLoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             TextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Name") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            TextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Email") },
@@ -69,36 +70,32 @@ fun UserLoginScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
             TextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                visualTransformation = PasswordVisualTransformation(),
+                value = phoneNumber,
+                onValueChange = { phoneNumber = it },
+                label = { Text("Phone Number") },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
             if (errorMessage.isNotEmpty()) {
-                Text(
-                    text = errorMessage,
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.error
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
             }
+            if (successMessage.isNotEmpty()) {
+                Text(text = successMessage, color = MaterialTheme.colorScheme.primary)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
-                    viewModel.loginUser(
+                    viewModel.updateProfile(
+                        name = name,
                         email = email,
-                        password = password,
-                        onSuccess = {
-                            isLoginSuccessful = true // Set the flag to true if login succeeds
-                        },
-                        onFailure = {
-                            errorMessage = it // Display the error message if login fails
-                        }
+                        phoneNumber = phoneNumber,
+                        onSuccess = { successMessage = "Profile updated successfully!" },
+                        onFailure = { errorMessage = it }
                     )
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Login")
+                Text("Save Changes")
             }
         }
     }

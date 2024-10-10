@@ -27,7 +27,7 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @Composable
 fun GetDataScreen(
     navController: NavController,
-    viewModel: SharedViewModel,
+    viewModel: SharedViewModel<Any?>,
     isAdmin: Boolean
 ) {
     val jobList by viewModel.jobList.collectAsState(initial = emptyList())

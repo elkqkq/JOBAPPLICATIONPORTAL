@@ -14,7 +14,7 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ForgotPasswordScreen(navController: NavController, viewModel: SharedViewModel) {
+fun ForgotPasswordScreen(navController: NavController, viewModel: SharedViewModel<Any?>) {
     var email by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
 

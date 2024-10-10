@@ -19,7 +19,7 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavController, viewModel: SharedViewModel){
+fun MainScreen(navController: NavController, viewModel: SharedViewModel<Any?>){
     Scaffold(
         topBar = {
             TopAppBar(

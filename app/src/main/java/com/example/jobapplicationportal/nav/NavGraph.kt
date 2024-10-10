@@ -10,71 +10,61 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel<Any?>
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screens.UserSignupScreen.route // Changed start destination to UserSignupScreen
+        startDestination = Screens.UserSignupScreen.route
     ) {
-
-        // User Login screen
         composable(route = Screens.UserLoginScreen.route) {
             UserLoginScreen(navController = navController, viewModel = sharedViewModel)
         }
-
-        // User Sign Up screen
         composable(route = Screens.UserSignupScreen.route) {
             UserSignupScreen(navController = navController, viewModel = sharedViewModel)
         }
-
-        // Admin Login screen
         composable(route = Screens.AdminLoginScreen.route) {
             AdminLoginScreen(navController = navController, viewModel = sharedViewModel)
         }
-
-        // Admin Sign Up screen
         composable(route = Screens.AdminSignupScreen.route) {
             AdminSignupScreen(navController = navController, viewModel = sharedViewModel)
         }
-
-        // Forgot Password screen
         composable(route = Screens.ForgotPasswordScreen.route) {
             ForgotPasswordScreen(navController = navController, viewModel = sharedViewModel)
         }
-
-        // Profile screen
         composable(route = Screens.ProfileScreen.route) {
             ProfileScreen(navController = navController, viewModel = sharedViewModel)
         }
-
-        // User Dashboard screen
+        composable(route = Screens.EditProfileScreen.route) {
+            EditProfileScreen(navController = navController, viewModel = sharedViewModel)
+        }
+        composable(route = Screens.ChangePasswordScreen.route) {
+            ChangePasswordScreen(navController = navController, viewModel = sharedViewModel)
+        }
         composable(route = Screens.UserDashboardScreen.route) {
             UserDashboardScreen(navController = navController, viewModel = sharedViewModel, isAdmin = false)
         }
-
-        // Admin Dashboard screen
         composable(route = Screens.AdminDashboardScreen.route) {
             AdminDashboardScreen(navController = navController, viewModel = sharedViewModel, isAdmin = true)
         }
-
-        // Main screen
         composable(route = Screens.MainScreen.route) {
             MainScreen(navController = navController, viewModel = sharedViewModel)
         }
-
-        // Get Data screen
         composable(route = Screens.GetDataScreen.route) {
             GetDataScreen(navController = navController, viewModel = sharedViewModel, isAdmin = false)
         }
-
-        // Add Data screen
         composable(route = Screens.AddDataScreen.route) {
             AddDataScreen(navController = navController, viewModel = sharedViewModel)
         }
-
-        // Notification screen (optional, if added)
-        // composable(route = Screens.NotificationScreen.route) {
-        //     NotificationScreen(navController = navController, viewModel = sharedViewModel)
-        // }
+        composable(route = Screens.JobDetailsScreen.route) { backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: return@composable
+            JobDetailsScreen(navController = navController, viewModel = sharedViewModel, jobId = jobId)
+        }
+        composable(route = Screens.ApplicationScreen.route) {
+            ApplicationScreen(navController = navController, viewModel = sharedViewModel)
+        }
+        composable(route = Screens.AdminManageApplicationsScreen.route) {
+            AdminManageApplicationsScreen(navController = navController, viewModel = sharedViewModel)
+        }
     }
 }
+

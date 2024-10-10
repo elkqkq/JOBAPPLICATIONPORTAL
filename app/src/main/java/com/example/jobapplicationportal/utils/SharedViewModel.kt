@@ -1,9 +1,12 @@
 package com.example.jobapplicationportal.utils
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jobapplicationportal.model.Job
+import com.example.jobapplicationportal.model.UserProfile
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +39,7 @@ class SharedViewModel : ViewModel() {
     }
 
     // Signup user (both admin and regular user)
-    fun signupUser(email: String, password: String, isAdmin: Boolean, onSuccess: () -> Unit) {
+    fun signupUser(email: String, password: String, isAdmin: Boolean, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
                 val userId = result.user?.uid ?: return@addOnSuccessListener
@@ -49,11 +52,11 @@ class SharedViewModel : ViewModel() {
                         onSuccess()
                     }
                     .addOnFailureListener {
-                        println("Error adding user data: ${it.message}")
+                        onFailure("Error adding user data: \${it.message}")
                     }
             }
             .addOnFailureListener {
-                println("Signup error: ${it.message}")
+                onFailure("Signup error: \${it.message}")
             }
     }
 
@@ -64,7 +67,7 @@ class SharedViewModel : ViewModel() {
                 onResult("Password reset email sent. Please check your inbox.")
             }
             .addOnFailureListener { exception ->
-                onResult("Error: ${exception.message}")
+                onResult("Error: \${exception.message}")
             }
     }
 
@@ -79,7 +82,7 @@ class SharedViewModel : ViewModel() {
                 _jobList.value = jobs
             }
             .addOnFailureListener { exception ->
-                println("Error fetching jobs: ${exception.message}")
+                println("Error fetching jobs: \${exception.message}")
             }
     }
 
@@ -98,7 +101,7 @@ class SharedViewModel : ViewModel() {
                 fetchJobs() // Refresh job list after adding a new job
             }
             .addOnFailureListener { exception ->
-                println("Error adding job: ${exception.message}")
+                println("Error adding job: \${exception.message}")
             }
     }
 
@@ -110,12 +113,12 @@ class SharedViewModel : ViewModel() {
                 fetchJobs() // Refresh job list after deletion
             }
             .addOnFailureListener { exception ->
-                println("Error deleting job: ${exception.message}")
+                println("Error deleting job: \${exception.message}")
             }
     }
 
     // Apply for a job (User only)
-    fun applyForJob(job: Job) {
+    fun applyForJob(job: Job, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             val applicationData = hashMapOf(
@@ -128,14 +131,137 @@ class SharedViewModel : ViewModel() {
             firestore.collection("applications")
                 .add(applicationData)
                 .addOnSuccessListener {
-                    println("Successfully applied for job: ${job.title}")
+                    onSuccess()
                 }
                 .addOnFailureListener { exception ->
-                    println("Error applying for job: ${exception.message}")
+                    onFailure(exception.message ?: "Error applying for job")
                 }
         } else {
-            println("Error: User not logged in.")
+            onFailure("User not logged in.")
         }
+    }
+
+
+    // Fetch job details by ID
+    fun fetchJobDetails(jobId: String, onSuccess: (Job) -> Unit, onFailure: (String) -> Unit) {
+        firestore.collection("jobs").document(jobId)
+            .get()
+            .addOnSuccessListener { document ->
+                val job = document.toObject(Job::class.java)
+                if (job != null) {
+                    onSuccess(job)
+                } else {
+                    onFailure("Job not found")
+                }
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception.message ?: "Unknown error")
+            }
+    }
+
+    // Fetch user's applications
+    fun fetchUserApplications(onSuccess: (List<Map<String, Any>>) -> Unit, onFailure: (String) -> Unit) {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            firestore.collection("applications")
+                .whereEqualTo("userId", currentUser.uid)
+                .get()
+                .addOnSuccessListener { result ->
+                    val applications = result.documents.map { document ->
+                        document.data ?: emptyMap()
+                    }
+                    onSuccess(applications)
+                }
+                .addOnFailureListener { exception ->
+                    onFailure(exception.message ?: "Error fetching applications")
+                }
+        } else {
+            onFailure("User not logged in.")
+        }
+    }
+
+    // Manage applications for admins
+    fun fetchApplications(onSuccess: (List<Map<String, Any>>) -> Unit, onFailure: (String) -> Unit) {
+        firestore.collection("applications")
+            .get()
+            .addOnSuccessListener { result ->
+                val applications = result.documents.map { document ->
+                    document.data ?: emptyMap()
+                }
+                onSuccess(applications)
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception.message ?: "Error fetching applications")
+            }
+    }
+
+    // Update application status
+    fun updateApplicationStatus(applicationId: String, newStatus: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        firestore.collection("applications").document(applicationId)
+            .update("status", newStatus)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception.message ?: "Error updating application status")
+            }
+    }
+
+    // Update user profile
+    fun updateProfile(name: String, email: String, phoneNumber: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            val userId = currentUser.uid
+            val updatedData = mapOf(
+                "name" to name,
+                "email" to email,
+                "phoneNumber" to phoneNumber
+            )
+            firestore.collection("users").document(userId)
+                .update(updatedData)
+                .addOnSuccessListener {
+                    onSuccess()
+                }
+                .addOnFailureListener { exception ->
+                    onFailure(exception.message ?: "Error updating profile")
+                }
+        } else {
+            onFailure("User not logged in.")
+        }
+    }
+
+    // Fetch current user details
+    fun fetchCurrentUser(onSuccess: (UserProfile) -> Unit, onFailure: (String) -> Unit) {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            val userId = currentUser.uid
+            firestore.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener { document ->
+                    val userProfile = document.toObject(UserProfile::class.java)
+                    if (userProfile != null) {
+                        onSuccess(userProfile)
+                    } else {
+                        onFailure("User profile not found.")
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    onFailure(exception.message ?: "Error fetching user details.")
+                }
+        } else {
+            onFailure("User not logged in.")
+        }
+    }
+
+    // Change user password
+    fun changeUserPassword(newPassword: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        auth.currentUser?.updatePassword(newPassword)
+            ?.addOnSuccessListener {
+                onSuccess()
+            }
+            ?.addOnFailureListener { exception ->
+                onFailure(exception.message ?: "Error changing password")
+            }
     }
 
     // LoginState sealed class to manage login state

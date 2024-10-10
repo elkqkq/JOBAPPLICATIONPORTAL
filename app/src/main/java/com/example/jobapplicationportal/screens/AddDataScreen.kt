@@ -25,7 +25,7 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @Composable
 fun AddDataScreen(
     navController: NavController,
-    viewModel: SharedViewModel
+    viewModel: SharedViewModel<Any?>
 ) {
     var title by remember { mutableStateOf("") }
     var companyName by remember { mutableStateOf("") }

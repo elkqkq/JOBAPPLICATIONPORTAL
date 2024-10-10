@@ -52,6 +52,9 @@ android {
 
 dependencies {
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics) // Firebase Analytics (optional, for tracking)
+    implementation(libs.firebase.auth.ktx) // Firebase Authentication
+    implementation(libs.firebase.firestore.ktx) // Firebase Firestore
     implementation(libs.firebase.analytics)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

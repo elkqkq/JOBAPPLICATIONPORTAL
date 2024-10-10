@@ -23,7 +23,7 @@ import com.google.firebase.auth.FirebaseAuth
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ProfileScreen(navController: NavController, viewModel: SharedViewModel) {
+fun ProfileScreen(navController: NavController, viewModel: SharedViewModel<Any?>) {
     val currentUser = FirebaseAuth.getInstance().currentUser
 
     Scaffold(

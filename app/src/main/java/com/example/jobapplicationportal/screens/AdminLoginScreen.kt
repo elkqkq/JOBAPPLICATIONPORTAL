@@ -22,7 +22,7 @@ import androidx.compose.runtime.livedata.observeAsState
 @Composable
 fun AdminLoginScreen(
     navController: NavController,
-    viewModel: SharedViewModel
+    viewModel: SharedViewModel<Any?>
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -78,11 +78,11 @@ fun AdminLoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             when (loginState) {
-                is SharedViewModel.LoginState.Loading -> CircularProgressIndicator()
-                is SharedViewModel.LoginState.Error -> {
-                    Text("Login Failed: ${(loginState as SharedViewModel.LoginState.Error).error}")
+                is SharedViewModel<Any?>.LoginState.Loading -> CircularProgressIndicator()
+                is SharedViewModel<Any?>.LoginState.Error -> {
+                    Text("Login Failed: ${(loginState as SharedViewModel<Any?>.LoginState.Error).error}")
                 }
-                is SharedViewModel.LoginState.Success -> {
+                is SharedViewModel<Any?>.LoginState.Success -> {
                     Text("Login Successful!")
                     // Optionally navigate or handle successful login further
                 }

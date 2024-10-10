@@ -29,8 +29,7 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @Composable
 fun UserDashboardScreen(
     navController: NavController,
-    viewModel: SharedViewModel
-    , isAdmin: Boolean
+    viewModel: SharedViewModel<Any?>, isAdmin: Boolean
 
 ) {
     val jobList by viewModel.jobList.collectAsState(initial = emptyList())

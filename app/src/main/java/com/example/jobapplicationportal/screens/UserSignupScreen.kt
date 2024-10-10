@@ -26,11 +26,22 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @Composable
 fun UserSignupScreen(
     navController: NavController,
-    viewModel: SharedViewModel
+    viewModel: SharedViewModel<Any?>
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
+    var isSignUpSuccessful by remember { mutableStateOf(false) }
+
+    // Navigate to login screen if signup is successful
+    LaunchedEffect(isSignUpSuccessful) {
+        if (isSignUpSuccessful) {
+            navController.navigate("user_login") {
+                popUpTo("user_signup") { inclusive = true }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -74,12 +85,29 @@ fun UserSignupScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
+            if (errorMessage.isNotEmpty()) {
+                Text(
+                    text = errorMessage,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.error
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             Button(
                 onClick = {
                     if (password == confirmPassword) {
-                        viewModel.signupUser(email, password, isAdmin = false) {
-                            navController.navigate("user_dashboard")
-                        }
+                        viewModel.signupUser(
+                            email = email,
+                            password = password,
+                            isAdmin = false,
+                            onSuccess = {
+                                isSignUpSuccessful = true // Set the flag to true if sign up succeeds
+                            },
+                            onFailure = {
+                                errorMessage = it // Display the error message if sign up fails
+                            }
+                        )
+                    } else {
+                        errorMessage = "Passwords do not match"
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
