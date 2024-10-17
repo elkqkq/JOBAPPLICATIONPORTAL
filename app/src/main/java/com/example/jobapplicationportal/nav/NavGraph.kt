@@ -10,7 +10,7 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    sharedViewModel: SharedViewModel<Any?>
+    sharedViewModel: SharedViewModel<Any>
 ) {
     NavHost(
         navController = navController,
@@ -64,6 +64,28 @@ fun NavGraph(
         }
         composable(route = Screens.AdminManageApplicationsScreen.route) {
             AdminManageApplicationsScreen(navController = navController, viewModel = sharedViewModel)
+        }
+        composable(route = Screens.AdminNotificationScreen.route) {
+            AdminNotificationsScreen(navController = navController, viewModel = sharedViewModel)
+        }
+        composable(route = Screens.JobApplicationListScreen.route) { backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: return@composable
+            JobApplicationsListScreen(navController = navController, viewModel = sharedViewModel, jobId = jobId)
+        }
+        // Add JobEditScreen here
+        composable(route = Screens.JobEditScreen.route) { backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: return@composable
+            JobEditScreen(navController = navController, viewModel = sharedViewModel, jobId = jobId)
+        }
+        composable(route = Screens.JobListScreen.route) {
+            JobListScreen(navController = navController, viewModel = sharedViewModel)
+        }
+
+        composable(route = Screens.SearchJobsScreen.route) {
+            SearchJobsScreen(navController = navController, viewModel = sharedViewModel)
+        }
+        composable(route = Screens.UserNotificationScreen.route) {
+            UserNotificationsScreen(navController = navController, viewModel = sharedViewModel)
         }
     }
 }

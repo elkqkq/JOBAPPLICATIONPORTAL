@@ -2,8 +2,8 @@ package com.example.jobapplicationportal.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,7 +23,7 @@ import com.google.firebase.auth.FirebaseAuth
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ProfileScreen(navController: NavController, viewModel: SharedViewModel<Any?>) {
+fun ProfileScreen(navController: NavController, viewModel: SharedViewModel<Any>) {
     val currentUser = FirebaseAuth.getInstance().currentUser
 
     Scaffold(
@@ -32,7 +32,7 @@ fun ProfileScreen(navController: NavController, viewModel: SharedViewModel<Any?>
                 title = { Text("Profile") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )

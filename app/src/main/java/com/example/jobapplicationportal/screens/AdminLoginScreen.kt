@@ -1,28 +1,23 @@
 package com.example.jobapplicationportal.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.jobapplicationportal.utils.SharedViewModel
-import androidx.compose.runtime.livedata.observeAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminLoginScreen(
     navController: NavController,
-    viewModel: SharedViewModel<Any?>
+    viewModel: SharedViewModel<Any>
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -78,15 +73,56 @@ fun AdminLoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             when (loginState) {
-                is SharedViewModel<Any?>.LoginState.Loading -> CircularProgressIndicator()
-                is SharedViewModel<Any?>.LoginState.Error -> {
-                    Text("Login Failed: ${(loginState as SharedViewModel<Any?>.LoginState.Error).error}")
+                is SharedViewModel.LoginState.Loading -> CircularProgressIndicator()
+                is SharedViewModel.LoginState.Error -> {
+                    Text("Login Failed: ${(loginState as SharedViewModel.LoginState.Error).error}")
                 }
-                is SharedViewModel<Any?>.LoginState.Success -> {
+                is SharedViewModel.LoginState.Success -> {
                     Text("Login Successful!")
-                    // Optionally navigate or handle successful login further
                 }
                 else -> {}
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // "Forgot Password" link
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Forgot your password? ",
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "Reset Password",
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable {
+                        navController.navigate("forgot_password_screen") // Navigate to Forgot Password screen
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // "Sign Up" link
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Don't have an account? ",
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "Sign Up",
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable {
+                        navController.navigate("admin_signup") // Navigate to Admin Sign Up screen
+                    }
+                )
             }
         }
     }

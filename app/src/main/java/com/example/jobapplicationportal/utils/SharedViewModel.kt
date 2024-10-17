@@ -1,6 +1,7 @@
 package com.example.jobapplicationportal.utils
 
 import android.app.Application
+import androidx.compose.ui.window.Notification
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jobapplicationportal.model.Job
@@ -8,11 +9,12 @@ import com.example.jobapplicationportal.model.UserProfile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class SharedViewModel : ViewModel() {
+class SharedViewModel<T> : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
 
@@ -82,7 +84,7 @@ class SharedViewModel : ViewModel() {
                 _jobList.value = jobs
             }
             .addOnFailureListener { exception ->
-                println("Error fetching jobs: \${exception.message}")
+                println("Error fetching jobs: ${exception.message}")
             }
     }
 
@@ -116,6 +118,73 @@ class SharedViewModel : ViewModel() {
                 println("Error deleting job: \${exception.message}")
             }
     }
+    fun updateJob(jobId: String, title: String, description: String, location: String) {
+        val jobData = mapOf(
+            "title" to title,
+            "description" to description,
+            "location" to location
+        )
+        firestore.collection("jobs").document(jobId)
+            .update(jobData)
+            .addOnSuccessListener {
+                println("Job updated successfully!")
+            }
+            .addOnFailureListener { exception ->
+                println("Error updating job: ${exception.message}")
+            }
+    }
+    fun searchJobs(query: String, location: String): Flow<List<Job>> {
+        val jobsFlow = MutableStateFlow<List<Job>>(emptyList())
+
+        // Assume the jobs are stored in Firestore, and you filter them based on query and location
+        firestore.collection("jobs")
+            .whereEqualTo("title", query)
+            .whereEqualTo("location", location)
+            .get()
+            .addOnSuccessListener { result ->
+                val jobs = result.documents.mapNotNull { document ->
+                    document.toObject(Job::class.java)
+                }
+                jobsFlow.value = jobs
+            }
+            .addOnFailureListener { exception ->
+                println("Error fetching jobs: ${exception.message}")
+            }
+
+        return jobsFlow
+    }
+    fun getJobById(jobId: String): Flow<Job?> {
+        val jobFlow = MutableStateFlow<Job?>(null)
+
+        firestore.collection("jobs").document(jobId)
+            .get()
+            .addOnSuccessListener { document ->
+                val job = document.toObject(Job::class.java)
+                jobFlow.value = job
+            }
+            .addOnFailureListener { exception ->
+                println("Error getting job: ${exception.message}")
+            }
+
+        return jobFlow
+    }
+
+
+
+    // Send notification (Admin only)
+    fun sendNotification(notificationText: String) {
+        val notification = hashMapOf("text" to notificationText)
+
+        firestore.collection("notifications")
+            .add(notification)
+            .addOnSuccessListener {
+                println("Notification sent successfully!")
+            }
+            .addOnFailureListener { exception ->
+                println("Error sending notification: ${exception.message}")
+            }
+    }
+
 
     // Apply for a job (User only)
     fun applyForJob(job: Job, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
@@ -158,6 +227,23 @@ class SharedViewModel : ViewModel() {
                 onFailure(exception.message ?: "Unknown error")
             }
     }
+    fun getApplicationsByJobId(jobId: String): Flow<List<Application>> {
+        val applicationsFlow = MutableStateFlow<List<Application>>(emptyList())
+        firestore.collection("applications")
+            .whereEqualTo("jobId", jobId)
+            .get()
+            .addOnSuccessListener { result ->
+                val applications = result.documents.map { document ->
+                    document.toObject(Application::class.java)!!
+                }
+                applicationsFlow.value = applications
+            }
+            .addOnFailureListener { exception ->
+                println("Error fetching applications: ${exception.message}")
+            }
+        return applicationsFlow
+    }
+
 
     // Fetch user's applications
     fun fetchUserApplications(onSuccess: (List<Map<String, Any>>) -> Unit, onFailure: (String) -> Unit) {
@@ -253,6 +339,30 @@ class SharedViewModel : ViewModel() {
         }
     }
 
+    fun changePassword(currentPassword: String, newPassword: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        val user = auth.currentUser
+        if (user != null && user.email != null) {
+            val credential = EmailAuthProvider.getCredential(user.email!!, currentPassword)
+
+            user.reauthenticate(credential).addOnCompleteListener { reauthTask ->
+                if (reauthTask.isSuccessful) {
+                    user.updatePassword(newPassword).addOnCompleteListener { updateTask ->
+                        if (updateTask.isSuccessful) {
+                            onSuccess()
+                        } else {
+                            onFailure("Password change failed: ${updateTask.exception?.message}")
+                        }
+                    }
+                } else {
+                    onFailure("Reauthentication failed: ${reauthTask.exception?.message}")
+                }
+            }
+        } else {
+            onFailure("User not logged in.")
+        }
+    }
+
+
     // Change user password
     fun changeUserPassword(newPassword: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         auth.currentUser?.updatePassword(newPassword)
@@ -262,6 +372,22 @@ class SharedViewModel : ViewModel() {
             ?.addOnFailureListener { exception ->
                 onFailure(exception.message ?: "Error changing password")
             }
+    }
+    // Function to fetch notifications
+    fun getNotifications(): Flow<List<Notification>> {
+        val notificationsFlow = MutableStateFlow<List<Notification>>(emptyList())
+        firestore.collection("notifications")
+            .get()
+            .addOnSuccessListener { result ->
+                val notifications = result.documents.mapNotNull { document ->
+                    document.toObject(Notification::class.java)
+                }
+                notificationsFlow.value = notifications
+            }
+            .addOnFailureListener { exception ->
+                println("Error fetching notifications: ${exception.message}")
+            }
+        return notificationsFlow
     }
 
     // LoginState sealed class to manage login state

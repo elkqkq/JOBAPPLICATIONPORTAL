@@ -3,6 +3,7 @@ package com.example.jobapplicationportal.screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,7 +16,7 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfileScreen(navController: NavController, viewModel: SharedViewModel<Any?>) {
+fun EditProfileScreen(navController: NavController, viewModel: SharedViewModel<Any>) {
     var email by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
@@ -42,7 +43,7 @@ fun EditProfileScreen(navController: NavController, viewModel: SharedViewModel<A
                 title = { Text("Edit Profile") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )

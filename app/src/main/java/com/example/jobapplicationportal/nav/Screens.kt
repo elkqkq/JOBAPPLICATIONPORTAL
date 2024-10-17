@@ -22,4 +22,15 @@ sealed class Screens(val route: String) {
 
     object ApplicationScreen : Screens("user_applications_screen")
     object AdminManageApplicationsScreen : Screens("admin_manage_applications_screen")
+    object AdminNotificationScreen : Screens("admin_notification_screen")
+    object JobApplicationListScreen : Screens("job_application_list_screen/{jobId}") {
+        fun createRoute(jobId: String) = "job_application_list_screen/$jobId"
+    }
+    object JobEditScreen : Screens("job_edit_screen/{jobId}") {
+        fun createRoute(jobId: String) = "job_edit_screen/$jobId"
+    }
+    object SearchJobsScreen : Screens("search_jobs_screen")
+    object UserNotificationScreen : Screens("user_notification_screen")
+    // New JobListScreen definition
+    object JobListScreen : Screens("job_list_screen")
 }

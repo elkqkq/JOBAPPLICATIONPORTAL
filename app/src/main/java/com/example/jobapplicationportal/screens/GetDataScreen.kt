@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -27,10 +28,12 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @Composable
 fun GetDataScreen(
     navController: NavController,
-    viewModel: SharedViewModel<Any?>,
+    viewModel: SharedViewModel<Any>,
     isAdmin: Boolean
 ) {
     val jobList by viewModel.jobList.collectAsState(initial = emptyList())
+    var successMessage by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -38,7 +41,7 @@ fun GetDataScreen(
                 title = { Text("Available Jobs") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -51,9 +54,25 @@ fun GetDataScreen(
                     isAdmin = isAdmin,
                     onEdit = { if (isAdmin) navController.navigate("edit_job/${job.id}") },
                     onDelete = { if (isAdmin) viewModel.deleteJob(job) },
-                    onApply = { if (!isAdmin) viewModel.applyForJob(job) }
+                    onApply = {
+                        if (!isAdmin) {
+                            viewModel.applyForJob(
+                                job = job,
+                                onSuccess = { successMessage = "Applied for the job successfully!" },
+                                onFailure = { errorMessage = "Failed to apply: $it" }
+                            )
+                        }
+                    }
                 )
             }
+        }
+
+        if (successMessage.isNotEmpty()) {
+            Text(text = successMessage, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(16.dp))
+        }
+
+        if (errorMessage.isNotEmpty()) {
+            Text(text = errorMessage, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
         }
     }
 }

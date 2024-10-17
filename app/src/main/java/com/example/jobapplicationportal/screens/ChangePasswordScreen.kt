@@ -2,6 +2,7 @@ package com.example.jobapplicationportal.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,7 +15,7 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChangePasswordScreen(navController: NavController, viewModel: SharedViewModel<Any?>) {
+fun ChangePasswordScreen(navController: NavController, viewModel: SharedViewModel<Any>) {
     var currentPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -27,15 +28,16 @@ fun ChangePasswordScreen(navController: NavController, viewModel: SharedViewMode
                 title = { Text("Change Password") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
         }
-    ) {
+    ) { paddingValues -> // Accept PaddingValues
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues) // Apply the padding from the Scaffold
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center

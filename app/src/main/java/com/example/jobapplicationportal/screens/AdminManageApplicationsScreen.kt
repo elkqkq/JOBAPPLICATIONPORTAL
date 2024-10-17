@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminManageApplicationsScreen(navController: NavController, viewModel: SharedViewModel<Any?>) {
+fun AdminManageApplicationsScreen(navController: NavController, viewModel: SharedViewModel<Any>) {
     val coroutineScope = rememberCoroutineScope()
     var applications by remember { mutableStateOf<List<Map<String, Any>>>(emptyList()) }
     var errorMessage by remember { mutableStateOf("") }
@@ -39,7 +40,7 @@ fun AdminManageApplicationsScreen(navController: NavController, viewModel: Share
                 title = { Text("Manage Applications") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )

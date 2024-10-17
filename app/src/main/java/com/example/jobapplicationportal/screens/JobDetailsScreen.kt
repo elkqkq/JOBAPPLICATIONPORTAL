@@ -3,6 +3,7 @@ package com.example.jobapplicationportal.screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,7 +17,7 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun JobDetailsScreen(navController: NavController, viewModel: SharedViewModel, jobId: String) {
+fun JobDetailsScreen(navController: NavController, viewModel: SharedViewModel<Any>, jobId: String) {
     var job by remember { mutableStateOf<Job?>(null) }
     var errorMessage by remember { mutableStateOf("") }
 
@@ -34,7 +35,7 @@ fun JobDetailsScreen(navController: NavController, viewModel: SharedViewModel, j
                 title = { Text("Job Details") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )

@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun JobPortalApp(viewModel: SharedViewModel<Any?>) {
+fun JobPortalApp(viewModel: SharedViewModel<Any>) {
     val navController = rememberNavController()
     NavGraph(navController = navController, sharedViewModel = viewModel)
 }

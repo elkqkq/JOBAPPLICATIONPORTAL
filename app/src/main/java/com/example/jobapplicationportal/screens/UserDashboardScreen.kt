@@ -18,6 +18,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -29,10 +32,12 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @Composable
 fun UserDashboardScreen(
     navController: NavController,
-    viewModel: SharedViewModel<Any?>, isAdmin: Boolean
-
+    viewModel: SharedViewModel<Any>,
+    isAdmin: Boolean
 ) {
     val jobList by viewModel.jobList.collectAsState(initial = emptyList())
+    var successMessage by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -55,10 +60,22 @@ fun UserDashboardScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
+            if (successMessage.isNotEmpty()) {
+                Text(text = successMessage, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(bottom = 8.dp))
+            }
+
+            if (errorMessage.isNotEmpty()) {
+                Text(text = errorMessage, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 8.dp))
+            }
+
             LazyColumn {
                 items(jobList) { job ->
                     JobCard(job = job, onApply = {
-                        viewModel.applyForJob(job)
+                        viewModel.applyForJob(job, onSuccess = {
+                            successMessage = "Successfully applied for the job!"
+                        }, onFailure = { error ->
+                            errorMessage = "Failed to apply: $error"
+                        })
                     })
                 }
             }

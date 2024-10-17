@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -18,7 +19,7 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminDashboardScreen(navController: NavController, viewModel: SharedViewModel<Any?>, isAdmin: Boolean) {
+fun AdminDashboardScreen(navController: NavController, viewModel: SharedViewModel<Any>, isAdmin: Boolean) {
     val jobList by viewModel.jobList.collectAsState(initial = emptyList())
 
     Scaffold(
@@ -27,7 +28,7 @@ fun AdminDashboardScreen(navController: NavController, viewModel: SharedViewMode
                 title = { Text("Admin Dashboard") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {

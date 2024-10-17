@@ -2,8 +2,8 @@ package com.example.jobapplicationportal.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,7 +25,7 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @Composable
 fun AddDataScreen(
     navController: NavController,
-    viewModel: SharedViewModel<Any?>
+    viewModel: SharedViewModel<Any>
 ) {
     var title by remember { mutableStateOf("") }
     var companyName by remember { mutableStateOf("") }
@@ -38,7 +38,7 @@ fun AddDataScreen(
                 title = { Text("Add Job") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )

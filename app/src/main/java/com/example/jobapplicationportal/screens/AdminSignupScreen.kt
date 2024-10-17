@@ -1,22 +1,17 @@
 package com.example.jobapplicationportal.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.jobapplicationportal.utils.SharedViewModel
@@ -26,12 +21,13 @@ import com.example.jobapplicationportal.utils.SharedViewModel
 @Composable
 fun AdminSignupScreen(
     navController: NavController,
-    viewModel: SharedViewModel<Any?>
+    viewModel: SharedViewModel<Any>
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+    var rememberMe by remember { mutableStateOf(false) } // Remember me checkbox state
 
     Scaffold(
         topBar = {
@@ -39,7 +35,7 @@ fun AdminSignupScreen(
                 title = { Text("Admin Signup") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -75,10 +71,25 @@ fun AdminSignupScreen(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Checkbox(
+                    checked = rememberMe,
+                    onCheckedChange = { rememberMe = it }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Remember me")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             if (errorMessage.isNotEmpty()) {
                 Text(
                     text = errorMessage,
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -103,6 +114,48 @@ fun AdminSignupScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Sign Up")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Link to Admin Login Screen
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Already have an account? ",
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "Login",
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable {
+                        navController.navigate("admin_login")
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Link to Forgot Password Screen
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "Forgot your password? ",
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = "Reset Password",
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable {
+                        navController.navigate("forgot_password_screen")
+                    }
+                )
             }
         }
     }
